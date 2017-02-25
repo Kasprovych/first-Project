@@ -39,6 +39,7 @@ public class BrandServiceImpl implements BrandService {
 	@Transactional(readOnly = true)
 	public Brand findOne(String name) {
 		return repository.findByName(name);
+	
 	}
 
 }
