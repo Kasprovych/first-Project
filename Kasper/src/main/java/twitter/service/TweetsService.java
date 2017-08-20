@@ -51,10 +51,10 @@ public class TweetsService {
                 int nextElement = element + 1;
                 if (tweetsList.get(element).getCreatedAt().getHours() != tweetsList.get(nextElement).getCreatedAt().getHours()) {
                     if (tweetList.contains(tweetsList.get(element))) {
-                        putValueInListAndCleanMap(tweetsMap, tweetList);
+                        putValueInMapAndCleanList(tweetsMap, tweetList);
                     } else {
                         tweetList.add(tweetsList.get(element));
-                        putValueInListAndCleanMap(tweetsMap, tweetList);
+                        putValueInMapAndCleanList(tweetsMap, tweetList);
                     }
                     element++;
                 } else {
@@ -66,7 +66,7 @@ public class TweetsService {
         return tweetsMap;
     }
 
-    private void putValueInListAndCleanMap(Map<String, Integer> tweetsMap, List<Status> tweetList) {
+    private void putValueInMapAndCleanList(Map<String, Integer> tweetsMap, List<Status> tweetList) {
         String date = new SimpleDateFormat("yyyy-MM-dd").format(tweetList.get(0).getCreatedAt());
         tweetsMap.put(date + " (" + tweetList.get(0).getCreatedAt().getHours() + ":00" + " - " + (tweetList.get(0).getCreatedAt().getHours() + 1) + ":00)", tweetList.size());
         tweetList.clear();
