@@ -2,9 +2,7 @@ package twitter.models;
 
 import java.util.Date;
 
-/**
- * Created by olehstefaniv on 19.08.17.
- */
+
 public class HashTag {
 
     private String hashtag;

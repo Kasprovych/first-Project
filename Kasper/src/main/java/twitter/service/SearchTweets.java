@@ -1,8 +1,6 @@
 package twitter.service;
 
-/**
- * Created by olehstefaniv on 19.08.17.
- */
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
