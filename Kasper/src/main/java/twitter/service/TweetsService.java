@@ -7,13 +7,15 @@ import org.springframework.util.StringUtils;
 import twitter4j.QueryResult;
 import twitter4j.Status;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
 public class TweetsService {
 
-    public static final Integer OPERATION_CALL_TWITTER_COUNT = 25;
-    public static final Integer HOUR_IN_DAY = 24;
+    private static final Integer OPERATION_CALL_TWITTER_COUNT = 25;
 
     @Autowired
     private SearchTweets searchTweets;
@@ -28,9 +30,10 @@ public class TweetsService {
             if (!StringUtils.isEmpty(hashtag)) {
                 queryResult = searchTweets.searchTweets(hashtag, lastTwitsId);
                 if (queryResult.isPresent()) {
-                    if (queryResult.get().getTweets().get(queryResult.get().getTweets().size() - 1).getCreatedAt().getTime() >= twentyHoursAgo.getTime()) {
+                    int size = queryResult.get().getTweets().size() - 1;
+                    if (queryResult.get().getTweets().get(size).getCreatedAt().getTime() >= twentyHoursAgo.getTime()) {
                         if (!CollectionUtils.isEmpty(queryResult.get().getTweets()) && queryResult.get().getTweets().size() > 1) {
-                            lastTwitsId = queryResult.get().getTweets().get(queryResult.get().getTweets().size() - 1).getId();
+                            lastTwitsId = queryResult.get().getTweets().get(size).getId();
                             tweetsList.addAll(queryResult.get().getTweets());
                         }
                     }
@@ -44,26 +47,28 @@ public class TweetsService {
         Map<String, Integer> tweetsMap = new LinkedHashMap<>();
         if (!CollectionUtils.isEmpty(tweetsList)) {
             List<Status> tweetList = new ArrayList<>();
-            for (int first = 0; first < tweetsList.size() - 1; ) {
-                if (tweetsList.get(first).getCreatedAt().getHours() != tweetsList.get(first + 1).getCreatedAt().getHours()) {
-                    if (tweetList.contains(tweetsList.get(first))) {
-                        putAndCleanMap(tweetsMap, tweetList);
+            for (int element = 0; element < tweetsList.size() - 1; ) {
+                int nextElement = element + 1;
+                if (tweetsList.get(element).getCreatedAt().getHours() != tweetsList.get(nextElement).getCreatedAt().getHours()) {
+                    if (tweetList.contains(tweetsList.get(element))) {
+                        putValueInListAndCleanMap(tweetsMap, tweetList);
                     } else {
-                        tweetList.add(tweetsList.get(first));
-                        putAndCleanMap(tweetsMap, tweetList);
+                        tweetList.add(tweetsList.get(element));
+                        putValueInListAndCleanMap(tweetsMap, tweetList);
                     }
-                    first++;
+                    element++;
                 } else {
-                    tweetList.add(tweetsList.get(first));
-                    first++;
+                    tweetList.add(tweetsList.get(element));
+                    element++;
                 }
             }
         }
         return tweetsMap;
     }
 
-    private void putAndCleanMap(Map<String, Integer> tweetsMap, List<Status> tweetList) {
-        tweetsMap.put(tweetList.get(0).getCreatedAt().getHours() + ":00" + " - " + (tweetList.get(0).getCreatedAt().getHours() + 1) + ":00", tweetList.size());
+    private void putValueInListAndCleanMap(Map<String, Integer> tweetsMap, List<Status> tweetList) {
+        String date = new SimpleDateFormat("yyyy-MM-dd").format(tweetList.get(0).getCreatedAt());
+        tweetsMap.put(date + " (" + tweetList.get(0).getCreatedAt().getHours() + ":00" + " - " + (tweetList.get(0).getCreatedAt().getHours() + 1) + ":00)", tweetList.size());
         tweetList.clear();
     }
 
