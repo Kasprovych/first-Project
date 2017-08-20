@@ -1,0 +1,18 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml" xmlns:form="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Hello Twitter</title>
+</head>
+<body>
+
+<th:foreach th:each="time: ${timeMap}">
+    <div>
+        <span th:text="${time.key}"/> : <span th:text="${time.value}"/>
+    </div>
+</th:foreach>
+
+<form method="post" th:action="@{/}">
+    <input type="text" name="hashtag" class="simpleInput"/>
+    <input type="submit" value="Search"/>
+</form>
+</body>
+</html>
